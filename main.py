@@ -1,3 +1,3 @@
-from function import iniciar
+from function import *
 
 iniciar()

@@ -96,8 +96,18 @@ def exibir_menu():
                     if continuar.lower() != "sim" and continuar.lower() != "s":
                         break
         elif escolha == 4: #Excluir
-            dados.pop("Corte Curt")
-            dump_arquivo()
+            print("\n<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>\n")
+            if len(dados) < 1:
+                print("Nenhum procedimento cadastrado")
+            else:
+                while True:
+                    listar_procedimento()
+                    excluir_procedimento()
+                    dump_arquivo()
+                    print("\nDigite 'sim' para continuar")
+                    continuar = input("-----------:")
+                    if continuar.lower() != "sim" and continuar.lower() != "s":
+                        break
         elif escolha == 5: #Fazer Backup
             print("\n<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>\n")
             fazer_backup()
@@ -152,7 +162,6 @@ def cadastrar_procedimento(nome_procedimento):
         else:
             materiais.append(material.title())
     dict_procedimento["Materiais"] = materiais
-    
 
     # Cadastrar os profissionais autorizados a realizar o procedimento
     print("Digite quais os profissionais autrizados a\nrealizar o procedimento ('fim' para sair)")
@@ -164,7 +173,8 @@ def cadastrar_procedimento(nome_procedimento):
         else:
             profissionais.append(profissional.title())
     dict_procedimento["Profissionais"] = profissionais
-    #Adisciona os dados no dicionário dados
+
+    #Adiciona os dados no dicionário dados
     dados[nome_procedimento.title()] = dict_procedimento
 
 def listar_procedimento():
@@ -211,7 +221,6 @@ def alterar_procedimento():
                                 break
                             except ValueError:
                                 print("ERRO! Valor inválido, Digite um número inteiro")
-                        
 
                     case ("2"|"valor"):
                         print("Digite o valor do procedimento (moeda: R$)")
@@ -222,7 +231,6 @@ def alterar_procedimento():
                                 break
                             except ValueError:
                                 print("ERRO! Valor inválido, Digite um número real\n(separação dos decimais deve ser realizada com '.')")
-                        
 
                     case ("3"|"materiais"):
                         print('''
@@ -240,10 +248,13 @@ def alterar_procedimento():
                                 if material.lower() == "fim" or material.lower() == "f" or material.lower() == "":
                                     break
                                 else:
-                                    if materiais.index(material.title()):
-                                        print("Valor já existente")
-                                    else:
+                                    try:
+                                        if (materiais.index(material.title())+1) == True:
+                                                print("Valor já existente")
+                                    except ValueError:
                                         materiais.append(material.title())
+                                    #else:
+                                        #materiais.append(material.title())
                             chave_dados["Materiais"] = materiais
                             
 
@@ -278,7 +289,6 @@ def alterar_procedimento():
                         else:
                             print("Opção inválida")
 
-
                     case ("4"|"profissionais"):
                         print('''
 1 - Adicionar
@@ -295,9 +305,10 @@ def alterar_procedimento():
                                 if profissional.lower() == "fim" or profissional.lower() == "f" or profissional.lower() == "":
                                     break
                                 else:
-                                    if profissionais.index(profissional.title()):
-                                            print("Valor ja existente")
-                                    else:
+                                    try:
+                                        if profissionais.index(profissional.title()):
+                                                print("Valor ja existente")
+                                    except ValueError:
                                         profissionais.append(profissional.title())
                             chave_dados["Profissionais"] = profissionais
 
@@ -328,7 +339,6 @@ def alterar_procedimento():
                                         profissionais.pop(profissionais.index(profissional.title()))
                                     except ValueError:
                                         print("Valor não encontrado")
-
                         else:
                             print("Opção inválida")
 
@@ -338,7 +348,17 @@ def alterar_procedimento():
     except KeyError:
         print("Chave não encontrada")
 
-
+def excluir_procedimento():
+    global dados
+    print("\nQual procedimento deseja excluir?")
+    procedimento = input("-----------:")
+    chave_dados = dados.get(procedimento.title())
+    try:
+        if chave_dados == dados[procedimento.title()]:
+            del dados[procedimento.title()]
+    except KeyError:
+        print("Chave não encontrada")
+        
 # Cria um novo documento de backup do arquivo existente
 def fazer_backup():
     arquivo_json = open("procedimentos.json", encoding="utf-8")
